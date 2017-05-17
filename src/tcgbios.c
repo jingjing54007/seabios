@@ -560,44 +560,6 @@ tpm20_get_pcrbanks(void)
     return ret;
 }
 
-static int
-tpm12_determine_timeouts(void)
-{
-    struct tpm_res_getcap_timeouts timeouts;
-    int ret = tpm12_get_capability(TPM_CAP_PROPERTY, TPM_CAP_PROP_TIS_TIMEOUT
-                                   , &timeouts.hdr, sizeof(timeouts));
-    if (ret)
-        return ret;
-
-    struct tpm_res_getcap_durations durations;
-    ret = tpm12_get_capability(TPM_CAP_PROPERTY, TPM_CAP_PROP_DURATION
-                               , &durations.hdr, sizeof(durations));
-    if (ret)
-        return ret;
-
-    int i;
-    for (i = 0; i < 3; i++)
-        durations.durations[i] = be32_to_cpu(durations.durations[i]);
-
-    for (i = 0; i < 4; i++)
-        timeouts.timeouts[i] = be32_to_cpu(timeouts.timeouts[i]);
-
-    dprintf(DEBUG_tcg, "TCGBIOS: timeouts: %u %u %u %u\n",
-            timeouts.timeouts[0],
-            timeouts.timeouts[1],
-            timeouts.timeouts[2],
-            timeouts.timeouts[3]);
-
-    dprintf(DEBUG_tcg, "TCGBIOS: durations: %u %u %u\n",
-            durations.durations[0],
-            durations.durations[1],
-            durations.durations[2]);
-
-    tpmhw_set_timeouts(timeouts.timeouts, durations.durations);
-
-    return 0;
-}
-
 static void
 tpm20_set_timeouts(void)
 {
@@ -843,10 +805,6 @@ tpm12_startup(void)
     ret = tpm12_assert_physical_presence();
     if (!ret)
         TPM_has_physical_presence = 1;
-
-    ret = tpm12_determine_timeouts();
-    if (ret)
-        return -1;
 
     ret = tpm_build_and_send_cmd(0, TPM_ORD_SelfTestFull, NULL, 0,
                                  TPM_DURATION_TYPE_LONG);

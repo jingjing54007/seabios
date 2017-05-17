@@ -85,9 +85,9 @@ enum tisTimeoutType {
  * Default command durations used before getting them from the
  * TPM itself
  */
-#define TPM_DEFAULT_DURATION_SHORT      2000000 /* us */
-#define TPM_DEFAULT_DURATION_MEDIUM    20000000 /* us */
-#define TPM_DEFAULT_DURATION_LONG      60000000 /* us */
+#define TPM_DEFAULT_DURATION_SHORT     20000000 /* us */
+#define TPM_DEFAULT_DURATION_MEDIUM    30000000 /* us */
+#define TPM_DEFAULT_DURATION_LONG      80000000 /* us */
 
 /*
  * TPM 2 command durations; we set them to the timeout values
